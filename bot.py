@@ -1,4 +1,3 @@
-from telegram import InlineQueryResultArticle, InputTextMessageContent, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, ConversationHandler, Filters, InlineQueryHandler, CallbackContext
 import logging
 from datetime import datetime, timedelta
@@ -9,7 +8,7 @@ def reminder(context):
     context.bot.send_message(chat_id=context.job.context, text="Type /daily to start your daily.")
 
 def start(update, context):
-    update.message.reply_text("Type /daily to start your daily.")
+    #update.message.reply_text("Type /daily to start your daily.")
     dt = datetime.today()
     context.job_queue.run_repeating(reminder, 
                                     interval=timedelta(days=1), 
