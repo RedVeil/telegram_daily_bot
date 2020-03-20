@@ -18,15 +18,17 @@ def start(update, context):
 
 
 def daily(update, context):
-    update.message.reply_text("Hello im a standup Bot. Question 1")
+    weekdays = ["Monday","Tuesdy","Wednesday","Thursday","Friday","Saturday","Sunday"]
+    today = datetime.today()
+    update.message.reply_text(f"{weekdays[today.weekday()]} - {today.day}/{today.month}/{today.year}. \nWas schaffst du diese Woche?")
     return QUESTION2
 
 def second_question(update, context):
-    update.message.reply_text("Question 2")
+    update.message.reply_text("Woran arbeitest du Heute?")
     return QUESTION3
 
 def third_question(update, context):
-    update.message.reply_text("Question 3")
+    update.message.reply_text("Wofür bist du dankbar?")
     return DONE
 
 def done(update, context):
@@ -39,7 +41,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 QUESTION2, QUESTION3, DONE = range(3)
-bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
+bot_token = 'Token'
 
 updater = Updater(bot_token, use_context=True)
 dp = updater.dispatcher
