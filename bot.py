@@ -35,7 +35,7 @@ def second_daily(update, context):
 
 def third_daily(update, context):
     update.message.reply_text("Was ist dein Ziel für heute?")
-    return DONE
+    return DONE_DAILY
 
 def retro(update, context):
     update.message.reply_text("Wie war der Tag?")
@@ -68,7 +68,7 @@ logger = logging.getLogger(__name__)
 
 DAILY2, DAILY3, DONE_DAILY = range(3)
 RETRO2, RETRO3, DONE_RETRO = range(3)
-bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
+bot_token = 'Token'
 
 updater = Updater(bot_token, use_context=True)
 dp = updater.dispatcher
