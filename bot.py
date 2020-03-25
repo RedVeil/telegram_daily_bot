@@ -68,7 +68,7 @@ logger = logging.getLogger(__name__)
 
 DAILY2, DAILY3, DONE_DAILY = range(3)
 RETRO2, RETRO3, DONE_RETRO = range(3)
-bot_token = 'Token'
+bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
 
 updater = Updater(bot_token, use_context=True)
 dp = updater.dispatcher
