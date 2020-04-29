@@ -4,8 +4,6 @@ from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler,
                         InlineQueryHandler, Filters, CallbackContext)
 import logging
 from datetime import datetime, timedelta
-from tzlocal import get_localzone
-import pytz
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -125,7 +123,7 @@ def change_question(message, question, context):
 
 def payment_check(update, context):
     dt = datetime.today()
-    today = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day))
+    today = datetime(dt.year,dt.month,dt.day)
     if not context.user_data["premium"]:
         if  context.user_data["demo"]+timedelta(days=8) >= today:
             update.message.reply_text("demo in the future")
@@ -144,7 +142,7 @@ def start(update, context):
     context.user_data["language"] = "English"
     context.user_data["standup_time"] = 10
     context.user_data["retro_time"] = 19
-    context.user_data["demo"] = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day))
+    context.user_data["demo"] = datetime(dt.year,dt.month,dt.day)
     context.user_data["premium"] = False
     #payment_check(update, context)
     language_keyboard = [['Deutsch', 'English']]
@@ -160,9 +158,9 @@ def inital_retro_time(update, context):
     context.user_data["standup_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
     dt = datetime.today()
-    first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
-    if first <= pytz.timezone(str(get_localzone())).localize(datetime.now()):
-        first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+    first = datetime(dt.year,dt.month,dt.day,int(hour),int(minute))
+    if first <= datetime.now():
+        first = datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute))
 
     context.job_queue.run_repeating(standup_reminder, 
                                     interval=timedelta(days=1), 
@@ -181,9 +179,9 @@ def end_inital_configuration(update, context):
     context.user_data["retro_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
     dt = datetime.today()
-    first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
-    if first <= pytz.timezone(str(get_localzone())).localize(datetime.now()):
-        first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+    first = datetime(dt.year,dt.month,dt.day,int(hour),int(minute))
+    if first <= datetime.now():
+        first = datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute))
 
     context.job_queue.run_repeating(retro_reminder, 
                                     interval=timedelta(days=1), 
