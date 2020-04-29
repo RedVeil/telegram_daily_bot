@@ -13,16 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 
+#!!! TODO Implement Payment and Demo
+#Either in Telegram or check DB for key in db
+
+
 
 messages = {
     "Deutsch":{
-        "inital_standup_time": 'Alles klar, lass uns in deutsch weiter machen. \nWann soll ich dich an dein tägliches Standup erinnern?',
-        "inital_retro_time": ['Ich werde dich von nun an um ', ' an dein Standup erinnern. \nWann soll ich dich an deine tägliche Retro erinnern?' ],
+        "inital_standup_time": 'Alles klar, lass uns in deutsch weiter machen.\nWann soll ich dich an dein tägliches Standup erinnern?',
+        "inital_retro_time": ['Ich werde dich von nun an um ', ' an dein Standup erinnern.\nWann soll ich dich an deine tägliche Retro erinnern?' ],
         "end_inital_configuration": ['Ok, täglich um ',' werde ich dich an deine Retro erinnern.'
-                                    '\nMit /standup kannst du dein erstes Standup starten.' 
-                                    '\nWenn du mehr wissen willst schreibe /help.'],
+                                    '\n/standup startet dein erstes Standup.' 
+                                    '\n/help erklärt dir alle Befehle.'],
         "cancel": 'Tschüss, ich hoffe wir reden bald wieder.',
-        "change_language": 'Alles klar, lass uns in Deutsch weiter machen.',
+        "change_language": 'Alles klar, lass uns in deutsch weiter machen.',
         "change_standup_time": 'Wann soll ich dich an dein tägliches Standup erinnern?',
         "end_standup_time": ['Ich werde dich von nun an um ', ' an dein Standup erinnern.'],
         "change_retro_time":'Wann soll ich dich an deine tägliche Retro erinnern?',
@@ -31,73 +35,78 @@ messages = {
         "weekly_goal_reminder":"Text /weekly um mir von deinem Ziel für diese Woche zu berichten.",
         "retro_reminder":"Schreibe /retro um deine Retro zu starten.",
         "weekly_goal": "Also, was ist dein Ziel für diese Woche? Ich bin ganz Ohr.",
-        "standup_inital":"Guten Morgen :) \n Was ist dein Ziel für Heute?",
-        "standup_placeholder": "",
+        "standup_inital":"Guten Morgen :)\nWas ist dein Ziel für Heute?",
+        "standup_placeholder": "Danke :)",
         "retro_inital": "Wie war dein Tag?",
         "retro_accomplished": "Was hast du heute geschafft?",
-        "retro_anything_else": "Willst du dir noch etwas anderes merken?",
-        "retro_placeholder": "",
-        "helper":"""Wenn du meine Sprache ändern willst schreibe /language.
-                    \n Möchtest du zu einer anderen Zeit an dein Standup erinnert werden schreibe /standup_time.
-                    \n /retro_time ändert wann ich dich an deine Retro erinnere.
-                    \n Wenn du die Fragen im Standup ändern oder löschen willst schreibe /change_standup.
-                    \n Um die Fragen in der Retro zu ändern oder zu löschen schreibe /change_retro.
-                    \n 
-                    \n Schreibe zu jedem Zeitpunkt /standup um dein Standup zu starten.
-                    \n Bei /weekly frage ich dich nach deinem Ziel der Woche und /retro startet die Retro.
-                    """,
-        "change_standup_inital":"Wie soll meine erste Frage lauten?",
+        "retro_placeholder": "Gute Nacht :)",
+        "helper":"Es gibt einige Befehle mit denen du mich kontrollieren kannst."
+                    "\n"
+                    "\n/language ändert meine Sprache zu Englisch."
+                    "\n/standuptime ändert die Zeit zu der ich dich an dein Standup erinnere."
+                    "\n/retrotime ändert wann ich dich an deine Retro erinnere."
+                    "\n/changestandup erlaubt dir Fragen im Standup zu ändern oder zu löschen."
+                    "\n/changeretro erlaubt dir ebenso die Fragen der Retro zu ändern oder zu löschen."
+                    "\n"
+                    "\n/standup startet zu jedem Zeitpunkt dein Standup."
+                    "\n/weekly startet die die Frage nach deinem Ziel der Woche."
+                    "\n/retro startet die Retro.",
+        "change_standup_inital":'''Wenn du eine Frage ändern möchtest, sag mir was ich dich fragen soll.
+                                \nWenn du eine Frage löschen möchtest, schreibe "DELETE".
+                                \nSchreibe "SKIP" wenn du diese Frage nicht ändern möchtest.
+                                \nWas soll ich zuerst fragen?''',
         "change_standup_placeholder":["Ich werde im Standup dir folgende Frage stellen: ","\nSoll ich dich noch etwas fragen?"],
         "change_standup_end": ["Meine zweite Frage lautet: ", "\nIst vermerkt."],
         "change_retro_inital":"Was soll ich dich als erstes fragen?",
         "change_retro_accomplished":["Meine erste Frage lautet: ", "\nWie lautet meine zweite Frage?"],
-        "change_retro_anything_else":["Ich werde dich als zweites das folgende fragen: ", "\nGibt es noch eine dritte Frage und wenn ja welche?" ],
-        "change_retro_placeholder":["Meine dritte Frage lautet: ","\nWenn ich dich noch etwas fragen soll, was wäre es?"],
-        "change_retro_end":["Meine letzte Frage ist: ", "\n Ich hab alles notiert."],
+        "change_retro_placeholder":["Ich werde dich als zweites das folgende fragen: ","\nWenn ich dich noch etwas fragen soll, was wäre es?"],
+        "change_retro_end":["Meine letzte Frage ist: ", "\nIch hab alles notiert."],
     },
     "English":{
-        "inital_standup_time": 'Very well, i will speak in english than.\nWhen would you like to get notified about your daily standup?',
-        "inital_retro_time": ['Ok, i will remind you about daily about your standup at ', '.\nWhen would you like to get notified about your daily retro?'],
-        "end_inital_configuration": ['I will remind you about daily about your retro at ', '.'
-                                    '\nYou can start your first standup now with /standup'
-                                    '\nIf you wanna learn more type /help.'],
-        "cancel": 'Bye! I hope we can talk again some day.',
-        "change_language": 'Very well, i will speak in english than.',
-        "change_standup_time":'When would you like to get notified about your daily standup?',
-        "end_standup_time": ['Ok, i will remind you about daily about your standup at ', '.'],
-        "change_retro_time":'When would you like to get notified about your daily retro?',
-        "end_retro_time":['I will remind you about daily about your retro at ', '.'],
-        "standup_reminder":"Hello, i shall remind you of your /standup.",
-        "weekly_goal_reminder":"Text /weekly to tell me about your goal for this week.",
-        "retro_reminder":"Text me /retro to start your retro.",
-        "weekly_goal": "So, what is your goal for the week?",
-        "standup_inital":"Good Day :) \n What is your goal for today?",
-        "standup_placeholder": "",
+        "inital_standup_time": "Alright, let's continue in english. When shall I remind you of your daily standup?",
+        "inital_retro_time": ['I will remind you from now on ', ' about your standup.\nWhen shall I remind you of your daily retro?'],
+        "end_inital_configuration": ["Okay, I'll remind you daily at "," about your retro."
+                                    "\n/standup starts your first standup."
+                                    "\n/help explains all available commands."],
+        "cancel": "Bye, I hope we talk again soon.",
+        "change_language": "Alright, let's continue in english.",
+        "change_standup_time": 'When should I remind you of your daily standup?',
+        "end_standup_time": ['I will remind you from now on at ', ' about your standup.'],
+        "change_retro_time": 'When should I remind you of your daily retro?',
+        "end_retro_time":["Okay, I'll remind you daily at "," about your retro."],
+        "standup_reminder": "Hello, I'm here to remind you about your /standup.",
+        "weekly_goal_reminder": "Text /weekly to tell me about your goal for this week.",
+        "retro_reminder": "Write /retro to start your retro.",
+        "weekly_goal": "So what is your goal for this week? I'm all ears.",
+        "standup_inital": "Good morning :)\nWhat is your goal for today?",
+        "standup_placeholder": "Have a good day :)",
         "retro_inital": "How was your day?",
         "retro_accomplished": "What did you do today?",
-        "retro_anything_else": "Is there anything else you want to remember?",
-        "retro_placeholder": "",
-        "helper":"""If you want to change my language write /language.
-                    \n If you want to be reminded of your standup at another time, write /standup_time.
-                    \n /retro_time changes when I remind you of your retro.
-                    \n If you want to change or delete the questions in the standup write /change_standup.
-                    \n To change or delete the questions in the retro write /change_retro.
-                    \n 
-                    \n Write /standup at any time to start your standup.
-                    \n At /weekly I ask you for your goal of the week and /retro starts the retro.""",
-        "change_standup_inital":'''If you want to change a question type the question that i shall ask you. 
-                                    If you want to delete the question write "DELETE" and "SKIP" if you dont want to change this question.
-                                    \nWhat shall i ask first?''',
-        "change_standup_placeholder": ["I will ask you the following question in the standup: ","\nDo you want me to ask you something else?"],
-        "change_standup_end": ["My second question is", "\nOk, got it."],
+        "retro_placeholder": "Good Night :)",
+        "helper":"There are some commands you can use to control me."
+                    "\n"
+                    "\n/language changes my language to English."
+                    "\n/standuptime changes the time I remind you of your standup."
+                    "\n/retrotime changes when I remind you of your retro."
+                    "\n/changestandup allows you to change or delete questions in the standup."
+                    "\n/changeretro also allows you to change or delete retro questions."
+                    "\n"
+                    "\n/standup starts your standup at any time."
+                    "\n/weekly starts the question for your goal of the week."
+                    "\n/retro starts the retro.",
+        "change_standup_inital":"If you want to change a question type the question that i shall ask you."
+                                '\nIf you want to delete the question write "DELETE" and "SKIP" if you dont want to change this question.'
+                                '\nWhat shall i ask first?',
+        "change_standup_placeholder":["I will ask you this question in the standup: ","\nDo you want me to ask you something else?"],
+        "change_standup_end": ["My second question is ",". Noted."],
         "change_retro_inital": "What should I ask you first?",
-        "change_retro_accomplished": ["My first question for you is: ", "\nWhat's my second question?"],
-        "change_retro_anything_else":["I'll ask you the following second question: ", "\nIs there a third question and if so, which one?"],
-        "change_retro_placeholder": ["My third question is: ","\nIf I should ask you something else, what would it be?"],
-        "change_retro_end": ["My last question is: ", "\nI wrote it all down."]
+        "change_retro_accomplished":["My first question is: ", "\nWhat's my second question?"],
+        "change_retro_placeholder": ["I will ask you the following second question: ","\nIf I should ask you something else, what would it be?"],
+        "change_retro_end": ["My last question is: ", "\nGot it."],
     }
 }
 
+#---Utility Functions---
 def parse_time(message):
     divider = [",",".",":"]
     for i in divider:
@@ -126,12 +135,9 @@ def payment_check(update, context):
             return
             # how to check for subscription?
             #Block interaction and tell people to pay
+#----------------------------------------------------------------------------------------
 
-
-def error(update, context):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
+#---Start Configuration---
 def start(update, context):
     dt = datetime.today()
     context.user_data["messages"] = messages
@@ -140,7 +146,7 @@ def start(update, context):
     context.user_data["retro_time"] = 19
     context.user_data["demo"] = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day))
     context.user_data["premium"] = False
-    payment_check(update, context)
+    #payment_check(update, context)
     language_keyboard = [['Deutsch', 'English']]
     update.message.reply_text('What language shall i use?', reply_markup=ReplyKeyboardMarkup(language_keyboard, one_time_keyboard=True))
     return "inital_standup_time"
@@ -155,6 +161,9 @@ def inital_retro_time(update, context):
     hour, minute = parse_time(update.message.text)
     dt = datetime.today()
     first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= pytz.timezone(str(get_localzone())).localize(datetime.now()):
+        first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+
     context.job_queue.run_repeating(standup_reminder, 
                                     interval=timedelta(days=1), 
                                     first=first,
@@ -173,6 +182,9 @@ def end_inital_configuration(update, context):
     hour, minute = parse_time(update.message.text)
     dt = datetime.today()
     first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= pytz.timezone(str(get_localzone())).localize(datetime.now()):
+        first = pytz.timezone(str(get_localzone())).localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+
     context.job_queue.run_repeating(retro_reminder, 
                                     interval=timedelta(days=1), 
                                     first=first,
@@ -183,10 +195,10 @@ def end_inital_configuration(update, context):
                                 + messages[context.user_data["language"]]["end_inital_configuration"][1])
     return ConversationHandler.END
 
-def cancel(update, context):
-    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["cancel"],
-                                reply_markup=ReplyKeyboardRemove())
+#----------------------------------------------------------------------------------------
 
+
+#---Change Functions---
 def change_language(update, context):
     if context.user_data["language"] == "Deutsch":
         context.user_data["language"] = "English"
@@ -194,7 +206,6 @@ def change_language(update, context):
         context.user_data["language"] = "Deutsch"
 
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_language"])
-    
 
 def change_standup_time(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_standup_time"])
@@ -208,7 +219,6 @@ def end_standup_time(update, context):
                                 + messages[context.user_data["language"]]["end_standup_time"][1])
     return ConversationHandler.END
 
-
 def change_retro_time(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_retro_time"])
     return "end_retro_time"
@@ -219,12 +229,17 @@ def end_retro_time(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["end_retro_time"][0]
                                 + hour + ":" + minute
                                 + messages[context.user_data["language"]]["end_retro_time"][1])
+    return ConversationHandler.END
+#----------------------------------------------------------------------------------------
 
+#---Weekly Conversation---
 def weekly(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["weekly_goal"])
+#----------------------------------------------------------------------------------------
 
+#---Standup Conversation---
 def standup_inital(update, context):
-    payment_check(update, context)
+    #payment_check(update, context)
     weekdays = {"English":["Monday","Tuesdy","Wednesday","Thursday","Friday"], "Deutsch":["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"]}
     today = datetime.today()
     update.message.reply_text(f"""{weekdays[context.user_data["language"]][today.weekday()]} - {today.day}/{today.month}/{today.year}.
@@ -234,23 +249,25 @@ def standup_inital(update, context):
 def standup_placeholder(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["standup_placeholder"])
     return ConversationHandler.END
+#----------------------------------------------------------------------------------------
 
+
+#---Retro Conversation---
 def retro_inital(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["retro_inital"])
     return "retro_accomplished"
 
 def retro_accomplished(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["retro_accomplished"])
-    return "retro_anything_else"
-
-def retro_anything_else(update, context):
-    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["retro_anything_else"])
     return "retro_placeholder"
 
 def retro_placeholder(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["retro_placeholder"])
     return ConversationHandler.END
+#----------------------------------------------------------------------------------------
 
+
+#---Reminder---
 def standup_reminder(context):
     context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["standup_reminder"])
 
@@ -259,15 +276,29 @@ def weekly_goal_reminder(context):
 
 def retro_reminder(context):
     context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["retro_reminder"])
+#----------------------------------------------------------------------------------------
 
 
 
+#---Helper Functions---
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
+def cancel(update, context):
+    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["cancel"],
+                                reply_markup=ReplyKeyboardRemove())
+
+def reset_questions(update, context):
+    context.user_data["messages"] = messages
+    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["reset_question"])
 
 def helper(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["helper"])
+#----------------------------------------------------------------------------------------
 
 
-
+#---Change Standup Conversation---
 def change_standup_inital(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_standup_inital"])
     return "change_standup_placeholder"
@@ -285,11 +316,12 @@ def change_standup_end(update, context):
                                 + update.message.text
                                 + context.user_data["messages"][context.user_data["language"]]["change_standup_end"][1])
     return ConversationHandler.END
+#----------------------------------------------------------------------------------------
 
 
-
+#---Change Retro Conversation---
 def change_retro_inital(update, context):
-    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_retro_inital"][0])
+    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_retro_inital"])
     return "change_retro_accomplished"
 
 def change_retro_accomplished(update, context):
@@ -297,13 +329,6 @@ def change_retro_accomplished(update, context):
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_retro_accomplished"][0]
                                 + update.message.text
                                 + context.user_data["messages"][context.user_data["language"]]["change_retro_accomplished"][1])
-    return "change_retro_anything_else"
-
-def change_retro_anything_else(update, context):
-    change_question(update.message.text, "retro_accomplished", context)
-    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["change_retro_anything_else"][0]
-                                + update.message.text
-                                + context.user_data["messages"][context.user_data["language"]]["change_retro_anything_else"][1])
     return "change_retro_placeholder"
 
 def change_retro_placeholder(update, context):
@@ -319,21 +344,19 @@ def change_retro_end(update, context):
                                 + update.message.text
                                 + context.user_data["messages"][context.user_data["language"]]["change_retro_end"][1])
     return ConversationHandler.END
+#----------------------------------------------------------------------------------------
 
 
 
-def reset_questions(update, context):
-    context.user_data["messages"] = messages
-    update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["reset_question"])
+
 
 
 
 def main():
-    bot_token = 'token'
+    bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
     updater = Updater(bot_token, use_context=True)
     dp = updater.dispatcher
 
-    
 
     start_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
@@ -346,7 +369,7 @@ def main():
     )
 
     standup_time_handler = ConversationHandler(
-        entry_points=[CommandHandler('standup_time', change_standup_time)],
+        entry_points=[CommandHandler('standuptime', change_standup_time)],
         states={
             "end_standup_time": [MessageHandler(Filters.text, end_standup_time)],
         },
@@ -354,7 +377,7 @@ def main():
     )
 
     retro_time_handler = ConversationHandler(
-        entry_points=[CommandHandler('retro_time', change_retro_time)],
+        entry_points=[CommandHandler('retrotime', change_retro_time)],
         states={
             "end_retro_time": [MessageHandler(Filters.text, end_retro_time)],
         },
@@ -373,14 +396,13 @@ def main():
         entry_points=[CommandHandler("retro", retro_inital)],
         states={
             "retro_accomplished": [MessageHandler(Filters.text, retro_accomplished)],
-            "retro_anything_else": [MessageHandler(Filters.text,retro_anything_else)],
             "retro_placeholder": [MessageHandler(Filters.text, retro_placeholder)],
         },
         fallbacks = [CommandHandler('cancel', cancel)]
     )
 
     change_standup_handler = ConversationHandler(
-        entry_points=[CommandHandler("change_standup", change_standup_inital)],
+        entry_points=[CommandHandler("changestandup", change_standup_inital)],
         states={
             "change_standup_placeholder": [MessageHandler(Filters.text, change_standup_placeholder)],
             "change_standup_end": [MessageHandler(Filters.text, change_standup_end)],
@@ -389,10 +411,9 @@ def main():
     )
 
     change_retro_handler = ConversationHandler(
-        entry_points=[CommandHandler("change_retro", change_retro_inital)],
+        entry_points=[CommandHandler("changeretro", change_retro_inital)],
         states={
             "change_retro_accomplished": [MessageHandler(Filters.text, change_retro_accomplished)],
-            "change_retro_anything_else": [MessageHandler(Filters.text,change_retro_anything_else)],
             "change_retro_placeholder": [MessageHandler(Filters.text, change_retro_placeholder)],
             "change_retro_end": [MessageHandler(Filters.text, change_retro_end)],
         },
@@ -413,6 +434,7 @@ def main():
     dp.add_handler(CommandHandler("help", helper))
     dp.add_handler(CommandHandler("default", reset_questions))
     dp.add_error_handler(error)
+
     #Start Bot
     updater.start_polling()
 
@@ -421,6 +443,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-#! Payment
