@@ -397,7 +397,7 @@ def change_retro_end(update, context):
 
 
 def main():
-    bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
+    bot_token = 'token'
     updater = Updater(bot_token, use_context=True)
     dp = updater.dispatcher
 
