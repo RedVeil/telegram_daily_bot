@@ -1,10 +1,11 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler, 
                         MessageHandler, ConversationHandler,  
-                        InlineQueryHandler, Filters, CallbackContext)
+                        InlineQueryHandler, Filters, CallbackContext, JobQueue)
 import logging
 from datetime import datetime, timedelta
-
+import pytz
+from tzlocal import get_localzone
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -137,12 +138,11 @@ def payment_check(update, context):
 
 #---Start Configuration---
 def start(update, context):
+    tz = get_localzone()
     dt = datetime.today()
     context.user_data["messages"] = messages
     context.user_data["language"] = "English"
-    context.user_data["standup_time"] = 10
-    context.user_data["retro_time"] = 19
-    context.user_data["demo"] = datetime(dt.year,dt.month,dt.day)
+    context.user_data["demo"] = tz.localize(datetime(dt.year,dt.month,dt.day))
     context.user_data["premium"] = False
     #payment_check(update, context)
     language_keyboard = [['Deutsch', 'English']]
@@ -155,38 +155,44 @@ def inital_standup_time(update, context):
     return "inital_retro_time"
 
 def inital_retro_time(update, context):
-    context.user_data["standup_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
+    tz = get_localzone()
     dt = datetime.today()
-    first = datetime(dt.year,dt.month,dt.day,int(hour),int(minute))
-    if first <= datetime.now():
-        first = datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute))
+    first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= tz.localize(datetime.now()):
+        first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
 
     context.job_queue.run_repeating(standup_reminder, 
                                     interval=timedelta(days=1), 
                                     first=first,
-                                    context=[update.message.chat_id,context.user_data["language"]])
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="standup_reminder")
+
     context.job_queue.run_repeating(weekly_goal_reminder, 
                                     interval=timedelta(days=7), 
                                     first=first,
-                                    context=[update.message.chat_id,context.user_data["language"]])
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="weekly_reminder")
+
+
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["inital_retro_time"][0] 
                                 + hour + ":" + minute
                                 + messages[context.user_data["language"]]["inital_retro_time"][1])
     return "end_inital_configuration"
 
 def end_inital_configuration(update, context):
-    context.user_data["retro_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
+    tz = get_localzone()
     dt = datetime.today()
-    first = datetime(dt.year,dt.month,dt.day,int(hour),int(minute))
-    if first <= datetime.now():
-        first = datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute))
+    first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= tz.localize(datetime.now()):
+        first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
 
     context.job_queue.run_repeating(retro_reminder, 
                                     interval=timedelta(days=1), 
                                     first=first,
-                                    context=[update.message.chat_id,context.user_data["language"]])
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="retro_reminder")
 
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["end_inital_configuration"][0] 
                                 + hour + ":" + minute
@@ -210,8 +216,26 @@ def change_standup_time(update, context):
     return "end_standup_time"
 
 def end_standup_time(update, context):
-    context.user_data["standup_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
+    tz = get_localzone()
+    dt = datetime.today()
+    first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= tz.localize(datetime.now()):
+        first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+    context.job_queue.get_jobs_by_name("standup_reminder")[0].schedule_removal()
+    context.job_queue.get_jobs_by_name("weekly_reminder")[0].schedule_removal()
+
+    context.job_queue.run_repeating(standup_reminder, 
+                                    interval=timedelta(days=1), 
+                                    first=first,
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="standup_reminder")
+    context.job_queue.run_repeating(weekly_goal_reminder, 
+                                    interval=timedelta(days=7), 
+                                    first=first,
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="weekly_reminder")
+    
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["end_standup_time"][0]
                                 + hour + ":" + minute
                                 + messages[context.user_data["language"]]["end_standup_time"][1])
@@ -222,8 +246,21 @@ def change_retro_time(update, context):
     return "end_retro_time"
 
 def end_retro_time(update, context):
-    context.user_data["retro_time"] = update.message.text
     hour, minute = parse_time(update.message.text)
+    tz = get_localzone()
+    dt = datetime.today()
+    first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
+    if first <= tz.localize(datetime.now()):
+        first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+
+    context.job_queue.get_jobs_by_name("retro_reminder")[0].schedule_removal()
+
+    context.job_queue.run_repeating(retro_reminder, 
+                                    interval=timedelta(days=1), 
+                                    first=first,
+                                    context=[update.message.chat_id,context.user_data["language"]],
+                                    name="retro_reminder")
+
     update.message.reply_text(context.user_data["messages"][context.user_data["language"]]["end_retro_time"][0]
                                 + hour + ":" + minute
                                 + messages[context.user_data["language"]]["end_retro_time"][1])
@@ -267,13 +304,22 @@ def retro_placeholder(update, context):
 
 #---Reminder---
 def standup_reminder(context):
-    context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["standup_reminder"])
+    if datetime.today().weekday() == 5 or datetime.today().weekday() == 6:
+        return
+    else:    
+        context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["standup_reminder"])
 
 def weekly_goal_reminder(context):
-    context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["weekly_goal_reminder"])
+    if datetime.today().weekday() == 5 or datetime.today().weekday() == 6:
+        return
+    else:  
+        context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["weekly_goal_reminder"])
 
 def retro_reminder(context):
-    context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["retro_reminder"])
+    if datetime.today().weekday() == 5 or datetime.today().weekday() == 6:
+        return
+    else:
+        context.bot.send_message(chat_id=context.job.context[0], text=messages[context.job.context[1]]["retro_reminder"])
 #----------------------------------------------------------------------------------------
 
 
@@ -351,7 +397,7 @@ def change_retro_end(update, context):
 
 
 def main():
-    bot_token = 'token'
+    bot_token = '1078408531:AAGt3Vbqd0iSIqOuCtURopREsdyaL4ueqfw'
     updater = Updater(bot_token, use_context=True)
     dp = updater.dispatcher
 
