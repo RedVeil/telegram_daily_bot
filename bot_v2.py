@@ -1,7 +1,8 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import (InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove,LabeledPrice)
 from telegram.ext import (Updater, CommandHandler, CallbackQueryHandler, 
                         MessageHandler, ConversationHandler,  
-                        InlineQueryHandler, Filters, CallbackContext, JobQueue)
+                        InlineQueryHandler, Filters, CallbackContext, JobQueue,
+                        PreCheckoutQueryHandler)
 import logging
 from datetime import datetime, timedelta
 import pytz
@@ -105,6 +106,49 @@ messages = {
     }
 }
 
+
+
+def premium(update, context):
+    chat_id = update.message.chat_id
+    title = "Payment Example"
+    description = "Payment Example using python-telegram-bot"
+    # select a payload just for you to recognize its the donation from your bot
+    payload = "Custom-Payload"
+    # In order to get a provider_token see https://core.telegram.org/bots/payments#getting-a-token
+    #provider_token = "token"
+    start_parameter = "test-payment"
+    currency = "USD"
+    # price in dollars
+    price = 1
+    # price * 100 so as to include 2 decimal points
+    # check https://core.telegram.org/bots/payments#supported-currencies for more details
+    prices = [LabeledPrice("Test", price * 100)]
+
+    # optionally pass need_name=True, need_phone_number=True,
+    # need_email=True, need_shipping_address=True, is_flexible=True
+    context.bot.send_invoice(chat_id, title, description, payload,
+                             provider_token, start_parameter, currency, prices)
+
+def precheckout_callback(update, context):
+    print("precheckout")
+    query = update.pre_checkout_query
+    # check the payload, is this from your bot?
+    print("query")
+    if query.invoice_payload != 'Custom-Payload':
+        # answer False pre_checkout_query
+        print("error")
+        query.answer(ok=False, error_message="Something went wrong...")
+        print("error sent")
+    else:
+        print("ok")
+        query.answer(ok=True)
+        print("done")
+
+
+def successful_payment_callback(update, context):
+    # do something after successfully receiving payment?
+    update.message.reply_text("Thank you for your payment!")
+
 #---Utility Functions---
 def parse_time(message):
     divider = [",",".",":"]
@@ -138,6 +182,7 @@ def payment_check(update, context):
 
 #---Start Configuration---
 def start(update, context):
+    print("start")
     tz = get_localzone()
     dt = datetime.today()
     context.user_data["messages"] = messages
@@ -222,6 +267,7 @@ def end_standup_time(update, context):
     first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
     if first <= tz.localize(datetime.now()):
         first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
+
     context.job_queue.get_jobs_by_name("standup_reminder")[0].schedule_removal()
     context.job_queue.get_jobs_by_name("weekly_reminder")[0].schedule_removal()
 
@@ -252,7 +298,7 @@ def end_retro_time(update, context):
     first = tz.localize(datetime(dt.year,dt.month,dt.day,int(hour),int(minute)))
     if first <= tz.localize(datetime.now()):
         first = tz.localize(datetime(dt.year,dt.month,dt.day+1,int(hour),int(minute)))
-
+    
     context.job_queue.get_jobs_by_name("retro_reminder")[0].schedule_removal()
 
     context.job_queue.run_repeating(retro_reminder, 
@@ -397,7 +443,7 @@ def change_retro_end(update, context):
 
 
 def main():
-    bot_token = 'token'
+    bot_token = '1125102973:AAGBVN5M2rNl-LTqGjIzrAkTcHxdO_e5bMU'
     updater = Updater(bot_token, use_context=True)
     dp = updater.dispatcher
 
@@ -478,6 +524,10 @@ def main():
     dp.add_handler(CommandHandler("help", helper))
     dp.add_handler(CommandHandler("default", reset_questions))
     dp.add_error_handler(error)
+
+    #dp.add_handler(CommandHandler("premium", premium))
+    #dp.add_handler(PreCheckoutQueryHandler(precheckout_callback))
+    #dp.add_handler(MessageHandler(Filters.successful_payment, successful_payment_callback))
 
     #Start Bot
     updater.start_polling()
