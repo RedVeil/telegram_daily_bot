@@ -443,7 +443,7 @@ def change_retro_end(update, context):
 
 
 def main():
-    bot_token = '1125102973:AAGBVN5M2rNl-LTqGjIzrAkTcHxdO_e5bMU'
+    bot_token = 'token'
     updater = Updater(bot_token, use_context=True)
     dp = updater.dispatcher
 
